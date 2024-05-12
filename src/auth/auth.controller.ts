@@ -4,6 +4,7 @@ import { LoginAuthDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
 import { User } from 'src/modals/user.schema';
 import { AuthGuard } from './auth.guard';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -21,6 +22,13 @@ export class AuthController {
   async login(@Body() loginDto: LoginAuthDto): Promise<{user,token:string}> {
     return this.authService.login(loginDto);
   }
+
+    // forgot password
+    @Post('forgotPassword')
+    @HttpCode(200)
+    async forgotPassword(@Body() email: ForgotPasswordDto): Promise<any> {
+      return this.authService.forgotPassword(email);
+    }
 
   // get all users
   @UseGuards(AuthGuard)
