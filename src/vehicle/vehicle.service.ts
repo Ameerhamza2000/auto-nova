@@ -23,12 +23,12 @@ export class VehicleService {
   }
   }
 
-  findAll() {
-    return `This action returns all vehicle`;
+  async findAll(user) {
+    const vehicles = await this.vehicleModel.find({owner:user.sub})
+    return vehicles;
   }
 
   async findOne(id: string):Promise<Vehicle> {
-    console.log("get one vehicle hit")
     const validId= await mongoose.isValidObjectId(id);
     if(!validId){
       throw new BadRequestException("Invalid Id")

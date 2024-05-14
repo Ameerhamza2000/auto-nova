@@ -4,6 +4,9 @@ import { APP_PIPE } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { VehicleModule } from './vehicle/vehicle.module';
+import { ExpenseModule } from './expense/expense.module';
+import { ServiceModule } from './service/service.module';
+import { RefuelingModule } from './refueling/refueling.module';
 
 @Module({
   imports: [
@@ -14,6 +17,9 @@ import { VehicleModule } from './vehicle/vehicle.module';
     MongooseModule.forRoot(process.env.DB_URL),
     AuthModule,
     VehicleModule,
+    ExpenseModule,
+    ServiceModule,
+    RefuelingModule,
   ],
   providers: [
     {

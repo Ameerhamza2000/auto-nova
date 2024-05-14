@@ -11,15 +11,15 @@ import { Vehicle } from 'src/modals/vehicle.schema';
 export class VehicleController {
   constructor(private readonly vehicleService: VehicleService) {}
 
-  @Post()
+  @Post('addVehicle')
   async create(@Body() createVehicleDto: CreateVehicleDto, @Request() req):Promise<Vehicle> {
     // console.log(req.user);
     return await this.vehicleService.create(createVehicleDto,req.user);
   }
 
-  @Get()
-  findAll() {
-    return this.vehicleService.findAll();
+  @Get('getAllVehicles')
+  findAll(@Request() req) {
+    return this.vehicleService.findAll(req.user);
   }
 
   @Get(':id')
