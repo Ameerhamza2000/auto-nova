@@ -1,26 +1,73 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateRefuelingDto } from './dto/create-refueling.dto';
 import { UpdateRefuelingDto } from './dto/update-refueling.dto';
+import mongoose from 'mongoose';
+import { Refueling } from 'src/modals/refueling.schema';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class RefuelingService {
-  create(createRefuelingDto: CreateRefuelingDto) {
-    return 'This action adds a new refueling';
+  constructor(
+    @InjectModel(Refueling.name)
+    private refuelingModel: mongoose.Model<Refueling>,
+  ) {}
+
+  async create(createRefuelingDto: CreateRefuelingDto) {
+    const refuel = await this.refuelingModel.create(createRefuelingDto);
+    return refuel;
   }
 
-  findAll() {
-    return `This action returns all refueling`;
+  async findAll() {
+    const refuelings = await this.refuelingModel.find().populate('vehicleId');
+    return refuelings;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} refueling`;
+  async findAllVehicleRefueling(id) {
+    try {
+      const validId = mongoose.isValidObjectId(id);
+      if (!validId) {
+        throw new BadRequestException('Invalid Vehicle Id');
+      }
+      const refuelings = await this.refuelingModel.find({ vehicleId: id });
+      return refuelings;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 
-  update(id: number, updateRefuelingDto: UpdateRefuelingDto) {
-    return `This action updates a #${id} refueling`;
+  async findOne(id: string) {
+    const validId = mongoose.isValidObjectId(id);
+    if (!validId) {
+      throw new BadRequestException('Invalid Refuel Id');
+    }
+    const refueling = await this.refuelingModel.findOne({ _id: id });
+    if (!refueling) {
+      throw new NotFoundException('Not Found');
+    }
+    return refueling;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} refueling`;
+  async update(id: string, updateRefuelDto: UpdateRefuelingDto) {
+    const validId = mongoose.isValidObjectId(id);
+    if (!validId) {
+      throw new BadRequestException('Invalid Refuel Id');
+    }
+    const refuel = await this.refuelingModel.findByIdAndUpdate({ _id: id },{...updateRefuelDto},{new:true});
+    if (!refuel) {
+      throw new NotFoundException('Not Found');
+    }
+    return refuel;
+  }
+
+  async remove(id: string) {
+    const validId = mongoose.isValidObjectId(id);
+    if (!validId) {
+      throw new BadRequestException('Invalid Refuel Id');
+    }
+    const refuel = await this.refuelingModel.findByIdAndDelete({ _id: id });
+    if (!refuel) {
+      throw new NotFoundException('Not Found');
+    }
+    return refuel;
   }
 }
